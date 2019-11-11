@@ -1,0 +1,38 @@
+# for eng training
+
+
+#需要准备的文件
+
+
+#执行过程
+
+
+
+training/text2image --find_fonts --fonts_dir /usr/share/fonts --text ../langdata/chi_sim/chi_sim.training_text --min_coverage .9  --outputbase ../results/chi_sim/chi_sim
+
+
+
+
+#记录
+1.安装环境，保证下面命令可以正确执行
+	training/text2image
+	training/tesstrain.sh
+	training/lstmtraining
+	training/combine_tessdata
+	training/lstmeval
+	
+2.通过文本生成标记好的图片文件
+	text2image --find_fonts --fonts_dir /usr/share/fonts --text /home/tess/40_train/tesseract/4_train/eng/eng.training_text 
+			--min_coverage .9 --outputbase /home/tess/40_train/tesseract/4_train/eng/tifs/eng
+	这个命令会在tifs目录下面生成很多tif文件，可以用来查看每种字体生成的效果，每个图片最上面还会有匹配的命中率
+
+3.选择一种字体，进行标注 ，这里选择"Arial"
+	text2image  --fonts_dir /usr/share/fonts --text /home/tess/40_train/tesseract/4_train/eng/eng.training_text --min_coverage .9  --font "Arial"
+		--outputbase /home/tess/40_train/tesseract/4_train/eng/data/eng
+	会在data目录下生成eng.tif 和eng.box文件
+
+4.生成unicharset文件
+	unicharset_extractor /home/tess/40_train/tesseract/4_train/eng/data/eng.box
+	会在执行的目录生成unicharset文件，需要手动拷贝到/home/tess/40_train/tesseract/4_train/eng/data/目录下，重命名eng.unicharset
+
+5.
