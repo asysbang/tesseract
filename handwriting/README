@@ -1,0 +1,57 @@
+# training for handwirting 
+
+首先在终端中设置 export base=/home/tess/40_train/tesseract_my/handwriting
+
+
+/usr/local/bin/tesstrain.sh
+
+
+1.根据字体生成对应的图片文件(tif格式)
+text2image --find_fonts --fonts_dir ${base}/fonts --text ${base}/langdata/chi_sim/chi_sim.training_text --min_coverage .9  --outputbase ${base}/tif/hw
+
+
+2.生成训练数据 ,注意 不要使用/usr/local/bin/tesstrain.sh
+	需要把chi_sim.training_text  放在langdata/chi_sim 目录下
+	需要把chi_sim.config chi_sim.punc chi_sim.numbers chi_sim.wordlist  放在langdata/chi_sim 目录下
+	需要把radical-stroke.txt  放在langdata 目录下
+	需要把tessconfigs  和configs  放在tessdata 目录下
+	需要修改training/tesstrain_utils.sh  run_command tesseract -l chi_sim ？？？
+tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  --langdata_dir ${base}/langdata --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "伯乐毛毛虫体" "清松手寫體1" "游狼软笔楷书（简）" "REEJI-CHAO-QingshuGB" "MengXianMin" "Senty Pea 新蒂绿豆体"
+
+3.生成评估数据
+
+tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  --langdata_dir ${base}/langdata --tessdata_dir ${base}/tessdata --output_dir ${base}/eval --fontlist  "清松手寫體2"
+
+4.训练
+
+lstmtraining -U ${base}/train/chi_sim/chi_sim.unicharset --debug_level 100 --net_spec '[1,36,0,1 Ct5,5,16 Mp3,3 Lfys64 Lfx128 Lrx128 Lfx256 O1c105]' --model_output ${base}/models/model --train_listfile ${base}/train/chi_sim.training_files.txt --eval_listfile ${base}/eval/chi_sim.training_files.txt --max_iterations 5000 --traineddata ${base}/train/chi_sim/chi_sim.traineddata 
+
+
+
+5.生成识别模型
+lstmtraining --model_output ${base}/hw.lstm --continue_from ${base}/models/model_checkpoint --stop_training --traineddata ${base}/train/chi_sim/chi_sim.traineddata
+
+
+lstmeval --model ${base}/models/model1.149_12910.checkpoint --eval_listfile ${base}/eval/chi_sim.training_files.txt  --traineddata ${base}/train/chi_sim/chi_sim.traineddata
+
+
+
+lstmtraining --model_output ${base}/hw2.lstm --continue_from ${base}/models/model1.149_12910.checkpoint --stop_training --traineddata ${base}/train/chi_sim/chi_sim.traineddata
+
+
+
+训练之后的模型，识别结果并不满意
+
+
+
+
+
+MengXianMin
+Senty Pea 新蒂绿豆体
+REEJI-CHAO-QingshuGB
+伯乐毛毛虫体
+清松手寫體1
+清松手寫體2
+游狼软笔楷书（简）
+缘缘体行书GB2312 Medium
+
