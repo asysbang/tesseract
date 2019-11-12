@@ -10,6 +10,22 @@
 
 training/text2image --find_fonts --fonts_dir /usr/share/fonts --text ../langdata/chi_sim/chi_sim.training_text --min_coverage .9  --outputbase ../results/chi_sim/chi_sim
 
+src/training/tesstrain.sh --fonts_dir /usr/share/fonts --lang eng --linedata_only \
+  --noextract_font_properties --langdata_dir ../langdata \
+  --tessdata_dir ./tessdata --output_dir ~/tesstutorial/engtrain
+
+
+训练的目的？？？？？不是准确识别一种字体，而是通过不同字体的训练，来识别未训练过的字体，理解为，通过收集到的字体来训练，可以识别未知字体的文字
+如果时已知的字体的话，是不是直接训练的结果就能够准确识别了？？？？？？
+///////////
+tesstrain.sh --fonts_dir /home/tess/.fonts --lang eng --linedata_only --noextract_font_properties --langdata_dir /home/tess/40_train/tesseract/4_train/eng/langdata --tessdata_dir /home/tess/40_train/tesseract/4_train/eng/tessdata/ --output_dir /home/tess/40_train/tesseract/4_train/eng/train --fontlist "Arial"
+
+//训练数据  用train目录下的eng.traineddata去识别 “Verdana Italic” 的文字，关键时怎么合并成运行需要的traineddata？？？？
+tesstrain.sh --fonts_dir ~/.fonts/ --lang eng --linedata_only --noextract_font_properties  --langdata_dir ~/aa/langdata/ --tessdata_dir ~/aa/tessdata --output_dir ~/aa/train --fontlist  "Arial" "Georgia Italic" "Courier New" "Verdana Italic"
+langdata和tessdata目录却啥补啥
+
+//评估数据
+tesstrain.sh --fonts_dir ~/.fonts/ --lang eng --linedata_only --noextract_font_properties  --langdata_dir ~/aa/langdata/ --tessdata_dir ~/aa/tessdata --output_dir ~/aa/eval --fontlist  "Times New Roman,"
 
 
 
@@ -20,6 +36,7 @@ training/text2image --find_fonts --fonts_dir /usr/share/fonts --text ../langdata
 	training/lstmtraining
 	training/combine_tessdata
 	training/lstmeval
+	还需要git clone   git@github.com:tesseract-ocr/tessdata_best.git   和 git@github.com:tesseract-ocr/langdata_lstm.git
 	
 2.通过文本生成标记好的图片文件
 	text2image --find_fonts --fonts_dir /usr/share/fonts --text /home/tess/40_train/tesseract/4_train/eng/eng.training_text 
@@ -34,5 +51,25 @@ training/text2image --find_fonts --fonts_dir /usr/share/fonts --text ../langdata
 4.生成unicharset文件
 	unicharset_extractor /home/tess/40_train/tesseract/4_train/eng/data/eng.box
 	会在执行的目录生成unicharset文件，需要手动拷贝到/home/tess/40_train/tesseract/4_train/eng/data/目录下，重命名eng.unicharset
+///tesstrain.sh 应该代替了上面几个步骤
+5.训练
+lstmtraining -U ~/aa/train/eng/eng.unicharset --debug_level 100 --net_spec '[1,36,0,1 Ct5,5,16 Mp3,3 Lfys64 Lfx128 Lrx128 Lfx256 O1c105]' --model_output ~/aa/model --train_listfile ~/aa/train/eng.training_files.txt --eval_listfile ~/aa/eval/eng.training_files.txt --max_iterations 5000 --traineddata ~/aa/train/eng/eng.traineddata 
 
-5.
+Must provide a --traineddata see training wiki
+
+
+6.单独评估(不知道为啥还需要提供 Must provide a --traineddata see training wiki)
+lstmeval --model ~/aa/model_checkpoint --eval_listfile ~/aa/eval/eng.training_files.txt --traineddata ~/aa/train/eng/eng.traineddata
+
+7.checkpoint文件转换成识别模型 (不知道为啥还需要提供 Must provide a --traineddata see training wiki)
+lstmtraining --model_output ~/aa/eng.lstm --continue_from ~/aa/model_checkpoint --stop_training --traineddata ~/aa/train/eng/eng.traineddata
+
+
+//如果没有dawg文件的话，这个合并会报错，可以直接把上面的eng.lstm文件重命名成"my.traineddata",然后直接使用这个文件去识别
+8.合并可用的输出文件(可以添加eng.lstm-number-dawg  eng.lstm-punc-dawg eng.lstm-word-dawg )
+combine_tessdata -o ~/aa/small.traineddata ~/aa/eng.lstm
+
+
+
+
+

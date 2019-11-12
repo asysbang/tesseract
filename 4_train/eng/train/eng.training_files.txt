@@ -1,0 +1,1 @@
+/home/tess/40_train/tesseract/4_train/eng/train/eng.Arial.exp0.lstmf
