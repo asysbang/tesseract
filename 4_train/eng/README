@@ -17,6 +17,8 @@ src/training/tesstrain.sh --fonts_dir /usr/share/fonts --lang eng --linedata_onl
 
 训练的目的？？？？？不是准确识别一种字体，而是通过不同字体的训练，来识别未训练过的字体，理解为，通过收集到的字体来训练，可以识别未知字体的文字
 如果时已知的字体的话，是不是直接训练的结果就能够准确识别了？？？？？？
+目前看到的资料都是在原有的traineddata基础上训练的
+
 ///////////
 tesstrain.sh --fonts_dir /home/tess/.fonts --lang eng --linedata_only --noextract_font_properties --langdata_dir /home/tess/40_train/tesseract/4_train/eng/langdata --tessdata_dir /home/tess/40_train/tesseract/4_train/eng/tessdata/ --output_dir /home/tess/40_train/tesseract/4_train/eng/train --fontlist "Arial"
 
