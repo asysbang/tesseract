@@ -41,7 +41,7 @@ lstmtraining --model_output ${base}/hw2.lstm --continue_from ${base}/models/mode
 training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/hw9.traineddata
 
 训练之后的模型，识别结果并不满意，之后怎么做增量训练？？？？？？
-
+=======
 fine tuning
 
 training/combine_tessdata -e ${base}/tessdata_best/chi_sim.traineddata   ${base}/fine_train/chi_sim.lstm

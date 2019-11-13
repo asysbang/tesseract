@@ -1,0 +1,56 @@
+#在官方中文训练结果的基础上，做增量训练
+
+#背景
+几张中文图片，用官方的chi_sim识别效果不理想，需要自己训练，提高识别准确率
+
+#步骤
+1.搭建训练环境
+   按照官方或者网上教程有很多可以参考，目标是保证tesstrain.sh , lstmtraining等命令可以正确执行
+
+2.生成测试图片并用官方chi_sim识别，记录识别结果作为对比参数
+  图片是“实现可持续发展道路发展” （一种手写体），用官方识别的结果是 “实 规 可 持 缠 发 赉 道 路 发 厚”
+  text2image --find_fonts --fonts_dir ${base}/fonts --text ${base}/fine.training_text --min_coverage .9  --outputbase ${base}/tifs/fine
+
+3.创建文件夹
+  eval:评估数据，增量训练用不到
+  fonts:训练用的字体，这里采用几种手写体
+  langdata:例子中没用到，用官方的langdata_lstm 代替，训练的文本参数，包括chi_sim.config，chi_sim.numbers，chi_sim.punc，chi_sim.training_text，chi_sim.wordlist
+  models:训练过程中的结果，可以用来增量训练，最终的识别文件也是通过这里的文件生成的
+  tessdata:训练模型，configs文件夹，tessconfigs文件夹，chi_sim.traineddata ，chi_sim_vert.traineddata， eng.traineddata
+  tifs:文本生成的tif文件，只是用来生成测试图片，训练过程用不到
+  train:训练数据
+   
+4.设置根目录环境变量
+   export base=/home/tess/fine
+   修改training/tesstrain_utils.sh  run_command tesseract “-l chi_sim”，
+   建议tlog "\n=== Phase E: Generating ${ext} files ==="   也修改一下log，保证用的是自己修改的sh
+
+5.生成训练文本
+  在一段新闻的文字内插入大量的"实现","可持续","发展道路","发展"
+  替换官方的langdata_lstm/chi_sim/chi_sim.training_text
+
+6.生成训练数据
+  training/tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  /
+   --langdata_dir /home/tess/40_train/langdata_lstm --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "HaTian-SuiXing"
+   这里用的官方的langdata_lstm 目录
+
+
+7.转换官方训练数据
+  training/combine_tessdata -e /home/tess/40_train/tessdata_best/chi_sim.traineddata   ${base}/train/chi_sim.lstm
+
+8.增量训练
+  lstmtraining --model_output ${base}/models/model --continue_from ${base}/train/chi_sim.lstm --traineddata ${base}/train/chi_sim/chi_sim.traineddata \
+  --old_traineddata /home/tess/40_train/tessdata_best/chi_sim.traineddata \
+  --train_listfile ${base}/train/chi_sim.training_files.txt \
+  --max_iterations 1300
+
+9.合并模型
+  training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/fine.traineddata
+
+10.验证
+  tesseract -l fine test.png test_fine 
+  查看识别结果 “实现 可 持续 发 展 道路 发 展”
+
+
+
+
