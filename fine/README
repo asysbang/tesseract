@@ -21,7 +21,7 @@
   train:训练数据
    
 4.设置根目录环境变量
-   export base=/home/tess/fine
+   export base=/home/tess/fine   
    修改training/tesstrain_utils.sh  run_command tesseract “-l chi_sim”，
    建议tlog "\n=== Phase E: Generating ${ext} files ==="   也修改一下log，保证用的是自己修改的sh
 
@@ -30,8 +30,7 @@
   替换官方的langdata_lstm/chi_sim/chi_sim.training_text
 
 6.生成训练数据
-  training/tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  /
-   --langdata_dir /home/tess/40_train/langdata_lstm --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "HaTian-SuiXing"
+  training/tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  --langdata_dir /home/tess/40_train/langdata_lstm --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "HaTian-SuiXing"
    这里用的官方的langdata_lstm 目录
 
 
@@ -52,5 +51,30 @@
   查看识别结果 “实现 可 持续 发 展 道路 发 展”
 
 
+PS:因为训练的数据过少，会导致原本可以识别的文字无法识别了。。。。。。那么增量训练还有意义吗？？？？
+   如果训练完一种手写字体A，再去训练手写字体B，那岂不是B准确了之后A又不准确了？？？？？需要实际验证下
+
+待完成：
+其他字体识别
+
+
+=========
+同字体下其他文字的增量训练
+1.修改langdata_lstm/chi_sim/chi_sim.training_text t添加增量的文本
+
+2.删除并重新生成训练数据
+  training/tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  --langdata_dir /home/tess/40_train/langdata_lstm --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "HaTian-SuiXing"
+
+3.转换上次训练的结果 （要用上次生成的fine.traineddata）
+	training/combine_tessdata -e ${base}/fine.traineddata   ${base}/train/chi_sim.lstm
+
+4.增量训练（old_traineddata 要用上次生成的fine.traineddata）
+  lstmtraining --model_output ${base}/models/model --continue_from ${base}/train/chi_sim.lstm --traineddata ${base}/train/chi_sim/chi_sim.traineddata \
+  --old_traineddata ${base}/fine.traineddata \
+  --train_listfile ${base}/train/chi_sim.training_files.txt \
+  --max_iterations 2300
+
+9.合并模型
+  training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/fine1.traineddata
 
 
