@@ -1,1 +1,1 @@
-/home/tess/fine/train/chi_sim.HaTian-SuiXing.exp0.lstmf
+/home/tess/40_train/tesseract_my/fine/train/chi_sim.陈继世潇洒体.exp0.lstmf

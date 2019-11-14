@@ -55,14 +55,13 @@ PS:因为训练的数据过少，会导致原本可以识别的文字无法识�
    如果训练完一种手写字体A，再去训练手写字体B，那岂不是B准确了之后A又不准确了？？？？？需要实际验证下
 
 待完成：
-其他字体识别
 
 
 =========
 同字体下其他文字的增量训练
 1.修改langdata_lstm/chi_sim/chi_sim.training_text t添加增量的文本
 
-2.删除并重新生成训练数据
+2.删除并重新生成训练数据（之前的models目录也要清空）
   training/tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  --langdata_dir /home/tess/40_train/langdata_lstm --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "HaTian-SuiXing"
 
 3.转换上次训练的结果 （要用上次生成的fine.traineddata）
@@ -74,7 +73,35 @@ PS:因为训练的数据过少，会导致原本可以识别的文字无法识�
   --train_listfile ${base}/train/chi_sim.training_files.txt \
   --max_iterations 2300
 
-9.合并模型
+5.合并模型
   training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/fine1.traineddata
+
+6.测试验证
+   test1.png 识别结果“大 批 能 习 负 重 的 仓储 机 器 人”
+
+
+====
+不同字体训练
+1.删除并重新生成训练数据（之前的models目录也要清空）
+  training/tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties  --langdata_dir /home/tess/40_train/langdata_lstm --tessdata_dir ${base}/tessdata --output_dir ${base}/train --fontlist  "陈继世潇洒体"
+
+2.转换上次训练的结果 （要用上次生成的fine1.traineddata）
+	training/combine_tessdata -e ${base}/fine1.traineddata   ${base}/train/chi_sim.lstm
+
+
+3.增量训练（old_traineddata 要用上次生成的fine1.traineddata）
+  lstmtraining --model_output ${base}/models/model --continue_from ${base}/train/chi_sim.lstm --traineddata ${base}/train/chi_sim/chi_sim.traineddata \
+  --old_traineddata ${base}/fine1.traineddata \
+  --train_listfile ${base}/train/chi_sim.training_files.txt \
+  --max_iterations 3300
+
+4.合并模型
+training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/fine_new.traineddata
+
+
+6.测试验证
+   test3.png 识别结果“大 批 能 够 负重 的 仓储 机 器 人”
+PS:之前test1的识别有些影响，但总的来说效果提升
+
 
 
