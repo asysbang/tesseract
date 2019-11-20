@@ -1,0 +1,123 @@
+export base=/home/ai/work/tesseract/train/handwriting
+export TESSDATA_PREFIX=/usr/local/share/tessdata     //同时需要下载eng  chi_sim  chi_sim_vert几种字体
+
+//系统字体匹配效果
+text2image --find_fonts --fonts_dir /usr/share/fonts --text ${base}/demo.txt --min_coverage .9  --outputbase ${base}/tifs/demo
+
+//当前训练字体匹配效果
+text2image --find_fonts --fonts_dir ${base}/fonts --text ${base}/demo.txt --min_coverage .9  --outputbase ${base}/tifs/demo
+
+//选择训练的字体列表 20种字体 （注意字体名称直接不是下划线而是空格）
+"AaCarrie" "AMCSongGBK-Light_Light" "AR_PL_UKai_CN" "AR_PL_UMing_CN_Light" "BoLeBaoZaoti"
+"HaTian-SuiXing" "HYLuoHuaShi" "JXC" "MengXianMin" "MYuppy" 
+"英章行书" "陈继世潇洒体" "REEJI-CHAO-QingshuGB" "Senty_Pea_新蒂绿豆体" "游狼软笔楷书（简）"
+"QFKT" "Noto_Sans_CJK_SC" "【嵐】竹风体" "缘缘体行书GB2312_Medium" "伯乐毛毛虫体"
+
+
+//训练语料，替换原来的，用20000个字代替 耗时 4分钟
+time tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties --langdata_dir /home/ai/work/tesseract/src/langdata_lstm --tessdata_dir /home/ai/work/tesseract/src/tessdata_best --output_dir ${base}/train --fontlist  "AaCarrie" "AMCSongGBK-Light Light" "AR PL UKai CN" "AR PL UMing CN Light" "BoLeBaoZaoti" "HaTian-SuiXing" "HYLuoHuaShi" "JXC" "MengXianMin" "MYuppy" "英章行书" "陈继世潇洒体" "REEJI-CHAO-QingshuGB" "Senty Pea 新蒂绿豆体" "游狼软笔楷书（简）" "QFKT" "Noto Sans CJK SC" "【嵐】竹风体" "缘缘体行书GB2312 Medium" "伯乐毛毛虫体"
+
+
+combine_tessdata -e /home/ai/work/tesseract/src/tessdata_best/chi_sim.traineddata   ${base}/train/chi_sim.lstm
+
+//18300次耗时304分钟达到9%错误率
+//28300 + 167分钟 达到7
+到4 需要380分钟  最后训练了3天 大约185300次 错误率0.3%
+time lstmtraining --model_output ${base}/models/model --continue_from ${base}/train/chi_sim.lstm --traineddata ${base}/train/chi_sim/chi_sim.traineddata \
+  --old_traineddata /home/ai/work/tesseract/src/tessdata_best/chi_sim.traineddata \
+  --train_listfile ${base}/train/chi_sim.training_files.txt \
+  --max_iterations 185300
+
+//注意tessdata_best 里面有个软连接configs -> tessconfigs/configs
+
+training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/my.traineddata
+
+training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/my1.traineddata  --old_traineddata /home/ai/work/tesseract/src/tessdata_best/chi_sim.traineddata
+
+
+Total chars = 20729
+AMCSongGBK-Light Light : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 0 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AMCSongGBK-Light_Light.tif
+AR PL UKai CN : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 1 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UKai_CN.tif
+AR PL UKai HK : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 2 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UKai_HK.tif
+AR PL UKai TW : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 3 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UKai_TW.tif
+AR PL UKai TW MBE : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 4 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UKai_TW_MBE.tif
+AR PL UMing CN Light : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 5 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UMing_CN_Light.tif
+AR PL UMing HK Light : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 6 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UMing_HK_Light.tif
+AR PL UMing TW Light : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 7 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UMing_TW_Light.tif
+AR PL UMing TW MBE Light : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 8 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AR_PL_UMing_TW_MBE_Light.tif
+AaCarrie : 20726 hits = 99.99%, raw = 1165 = 99.83%
+Rendered page 9 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.AaCarrie.tif
+BoLeBaoZaoti : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 10 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.BoLeBaoZaoti.tif
+HYLuoHuaShi : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 11 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.HYLuoHuaShi.tif
+HaTian-SuiXing : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 12 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.HaTian-SuiXing.tif
+Stripped 3 unrenderable words
+Hfj+fáS : 20646 hits = 99.60%, raw = 1145 = 98.11%
+Stripped 1 unrenderable words
+Rendered page 13 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Hfj+fáS.tif
+JXC : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 14 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.JXC.tif
+MYuppy : 20729 hits = 100.00%, raw = 1167 = 100.00%
+Rendered page 15 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.MYuppy.tif
+MengXianMin : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 16 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.MengXianMin.tif
+Noto Sans CJK JP : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 17 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_CJK_JP.tif
+Noto Sans CJK KR : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 18 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_CJK_KR.tif
+Noto Sans CJK SC : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 19 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_CJK_SC.tif
+Noto Sans CJK TC : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 20 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_CJK_TC.tif
+Noto Sans Mono CJK JP : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 21 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_Mono_CJK_JP.tif
+Noto Sans Mono CJK KR : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 22 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_Mono_CJK_KR.tif
+Noto Sans Mono CJK SC : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 23 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_Mono_CJK_SC.tif
+Noto Sans Mono CJK TC : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 24 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Sans_Mono_CJK_TC.tif
+Noto Serif CJK JP : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 25 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Serif_CJK_JP.tif
+Noto Serif CJK KR : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 26 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Serif_CJK_KR.tif
+Noto Serif CJK SC : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 27 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Serif_CJK_SC.tif
+Noto Serif CJK TC : 20727 hits = 99.99%, raw = 1166 = 99.91%
+Rendered page 28 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Noto_Serif_CJK_TC.tif
+QFKT : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 29 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.QFKT.tif
+REEJI-CHAO-QingshuGB : 20719 hits = 99.95%, raw = 1165 = 99.83%
+Rendered page 30 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.REEJI-CHAO-QingshuGB.tif
+Senty Pea 新蒂绿豆体 : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 31 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.Senty_Pea_新蒂绿豆体.tif
+【嵐】竹风体 : 20729 hits = 100.00%, raw = 1167 = 100.00%
+Rendered page 32 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.【嵐】竹风体.tif
+伯乐毛毛虫体 : 20726 hits = 99.99%, raw = 1165 = 99.83%
+Rendered page 33 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.伯乐毛毛虫体.tif
+清松手寫體1 : 20714 hits = 99.93%, raw = 1163 = 99.66%
+Rendered page 34 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.清松手寫體1.tif
+Stripped 1 unrenderable words
+清松手寫體2 : 20707 hits = 99.89%, raw = 1159 = 99.31%
+Rendered page 35 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.清松手寫體2.tif
+游狼软笔楷书（简） : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 36 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.游狼软笔楷书（简）.tif
+缘缘体行书GB2312 Medium : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 37 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.缘缘体行书GB2312_Medium.tif
+英章行书 : 20716 hits = 99.94%, raw = 1163 = 99.66%
+Rendered page 38 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.英章行书.tif
+陈继世潇洒体 : 20718 hits = 99.95%, raw = 1164 = 99.74%
+Rendered page 39 to file /home/ai/work/tesseract/train/handwriting/tifs/demo.陈继世潇洒体.tif
+
+
