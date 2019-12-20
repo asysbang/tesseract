@@ -1,0 +1,18 @@
+train for mhxy
+
+
+1.cat text/*.txt > train.txt
+
+export base=/home/ai/work/git/tesseract/mhxy
+
+text2image --find_fonts --fonts_dir ${base}/fonts --text ${base}/train.txt --min_coverage .9  --outputbase ${base}/tif/mhxy
+
+
+tesstrain.sh --fonts_dir ${base}/fonts --lang chi_sim --linedata_only --noextract_font_properties --langdata_dir /home/ai/work/tesseract/src/langdata_lstm --tessdata_dir /home/ai/work/tesseract/src/tessdata_best --output_dir ${base}/train --fontlist "DFPYuanW7-GB-mhws" "DFShaoNvW5-GB" "DFTanLiW5-GB" "HYBaiQingJ" "HYXiaoLiShuJ" "HYZhongHeiJ" "SimHei"
+
+lstmtraining --model_output ${base}/models/model --continue_from ${base}/train/chi_sim.lstm --traineddata ${base}/train/chi_sim/chi_sim.traineddata \
+  --old_traineddata /home/ai/work/tesseract/src/tessdata_best/chi_sim.traineddata \
+  --train_listfile ${base}/train/chi_sim.training_files.txt \
+  --max_iterations 1300
+
+  training/lstmtraining --stop_training --continue_from ${base}/models/model_checkpoint --traineddata ${base}/train/chi_sim/chi_sim.traineddata --model_output ${base}/mhxy.traineddata

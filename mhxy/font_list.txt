@@ -1,0 +1,17 @@
+Total chars = 1549
+DFPYuanW7-GB-mhws : 1549 hits = 100.00%, raw = 520 = 100.00%
+Rendered page 0 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.DFPYuanW7-GB-mhws.tif
+DFShaoNvW5-GB : 1548 hits = 99.94%, raw = 519 = 99.81%
+Rendered page 1 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.DFShaoNvW5-GB.tif
+DFTanLiW5-GB : 1548 hits = 99.94%, raw = 519 = 99.81%
+Rendered page 2 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.DFTanLiW5-GB.tif
+HYBaiQingJ : 1548 hits = 99.94%, raw = 519 = 99.81%
+Rendered page 3 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.HYBaiQingJ.tif
+HYXiaoLiShuJ : 1548 hits = 99.94%, raw = 519 = 99.81%
+Rendered page 4 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.HYXiaoLiShuJ.tif
+HYZhongHeiJ : 1549 hits = 100.00%, raw = 520 = 100.00%
+Rendered page 5 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.HYZhongHeiJ.tif
+SimHei : 1549 hits = 100.00%, raw = 520 = 100.00%
+Rendered page 6 to file /home/ai/work/git/tesseract/mhxy/tif/mhxy.SimHei.tif
+
+"DFPYuanW7-GB-mhws" "DFShaoNvW5-GB" "DFTanLiW5-GB" "HYBaiQingJ" "HYXiaoLiShuJ" "HYZhongHeiJ" "SimHei"

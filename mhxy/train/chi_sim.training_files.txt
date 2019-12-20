@@ -1,0 +1,7 @@
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.DFPYuanW7-GB-mhws.exp0.lstmf
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.DFShaoNvW5-GB.exp0.lstmf
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.DFTanLiW5-GB.exp0.lstmf
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.HYBaiQingJ.exp0.lstmf
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.HYXiaoLiShuJ.exp0.lstmf
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.HYZhongHeiJ.exp0.lstmf
+/home/ai/work/git/tesseract/mhxy/train/chi_sim.SimHei.exp0.lstmf
